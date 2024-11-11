@@ -17,6 +17,12 @@ CPMAddPackage(
     URL "https://github.com/cwahn/efp/archive/refs/tags/v0.1.0-rc.6.tar.gz"
 )
 
+# If this is the top-level CMakeLists.txt
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    add_subdirectory(tests)
+    add_subdirectory(examples)
+endif()
+
 # Reference: https://github.com/espressif/esp-idf/blob/v5.2.3/examples/build_system/cmake/idf_as_lib/CMakeLists.txt
 set(targets "esp32" "esp32s2" "esp32s3" "esp32c3" "esp32c2" "esp32c6" "esp32h2" "esp32p4")
 
@@ -26,15 +32,8 @@ if("${TARGET}" IN_LIST targets)
 
     # Create idf::{target} and idf::freertos static libraries
     idf_build_process("${TARGET}"
-
-        # try and trim the build; additional components
-        # will be included as needed based on dependency tree
-        #
-        # although esptool_py does not generate static library,
-        # processing the component is needed for flashing related
-        # targets and file generation
         COMPONENTS freertos esptool_py
-        SDKCONFIG ${CMAKE_CURRENT_LIST_DIR}/sdkconfig
+        # SDKCONFIG ${CMAKE_CURRENT_LIST_DIR}/sdkconfig
         BUILD_DIR ${CMAKE_BINARY_DIR})
 
     file(GLOB LIB_SRC
@@ -63,3 +62,4 @@ else()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
